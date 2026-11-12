@@ -9,3 +9,9 @@ dist/
 **/.env.*
 !**/.env.example
 *.tsbuildinfo
+
+api/src/generated/
+.cursor/
+.claude/
+.devin/
+.agents/
