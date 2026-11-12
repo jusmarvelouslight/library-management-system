@@ -1,27 +1,6 @@
 
 # Library Management System
 
-## Schema Decisions
-
-### Genre as a Separate Model
-
-Genre is represented as a separate model rather than being stored as plain text in every Book record. This avoids repeating genre information across multiple books and helps maintain consistent genre names throughout the database.
-
-### Book-to-Genre Relationship
-
-The Book model contains a `genreId` foreign key that references the primary key of the Genre model. Prisma represents this relationship through the `genre` relation field and the `@relation` attribute.
-
-This creates a one-to-many relationship: one genre can be associated with many books, while each book belongs to one genre.
-
-### Normalization and Data Integrity
-
-Separating genres from books reduces duplicated data and makes genre records easier to maintain. The foreign-key constraint ensures that a book cannot reference a genre that does not exist.
-
-### Relational Database Compared with a Document Database
-
-In this relational design, genre information is stored in its own table and connected to books using a foreign key. In a document database, genre information could instead be embedded inside each book document. The relational approach makes shared genre data easier to manage consistently.
-# Library Management System
-
 A backend API and PostgreSQL database layer for a Library Management System built with **NestJS**, **Prisma 7**, and **PostgreSQL**.
 
 ## Project Structure
