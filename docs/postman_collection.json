@@ -1,0 +1,54 @@
+{
+  "info": {"name": "Library Management System - Phase 2 (CRUD, validation, auth)", "description": "Run the 'Auth' folder first (it stores {{token}} and {{patronToken}}), then the rest in order. Set baseUrl to your API.", "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"},
+  "variable": [{"key": "baseUrl", "value": "http://localhost:3000"}, {"key": "token", "value": ""}, {"key": "patronToken", "value": ""}, {"key": "genreId", "value": ""}, {"key": "bookId", "value": ""}],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {"name": "Register librarian", "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "url": {"raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"]}, "body": {"mode": "raw", "raw": "{\n  \"name\": \"Head Librarian\",\n  \"email\": \"librarian@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"LIBRARIAN\"\n}", "options": {"raw": {"language": "json"}}}}, "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Created, or already registered', function () { pm.expect(pm.response.code).to.be.oneOf([201, 409]); });"]}}]},
+        {"name": "Register patron", "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "url": {"raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"]}, "body": {"mode": "raw", "raw": "{\n  \"name\": \"Jane Reader\",\n  \"email\": \"patron@example.com\",\n  \"password\": \"password123\"\n}", "options": {"raw": {"language": "json"}}}}, "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Created, or already registered', function () { pm.expect(pm.response.code).to.be.oneOf([201, 409]); });"]}}]},
+        {"name": "Login (librarian) - saves {{token}}", "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "url": {"raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"]}, "body": {"mode": "raw", "raw": "{\n  \"email\": \"librarian@example.com\",\n  \"password\": \"password123\"\n}", "options": {"raw": {"language": "json"}}}}, "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });", "const json = pm.response.json();", "pm.collectionVariables.set('token', json.access_token);"]}}]},
+        {"name": "Login (patron) - saves {{patronToken}}", "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "url": {"raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"]}, "body": {"mode": "raw", "raw": "{\n  \"email\": \"patron@example.com\",\n  \"password\": \"password123\"\n}", "options": {"raw": {"language": "json"}}}}, "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });", "const json = pm.response.json();", "pm.collectionVariables.set('patronToken', json.access_token);"]}}]}
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {"name": "Get profile (stretch)", "request": {"method": "GET", "header": [{"key": "Authorization", "value": "Bearer {{token}}"}], "url": {"raw": "{{baseUrl}}/users/profile", "host": ["{{baseUrl}}"], "path": ["users", "profile"]}}, "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"]}}]}
+      ]
+    },
+    {
+      "name": "Genres",
+      "item": [
+        {"name": "Create genre (librarian)", "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}], "url": {"raw": "{{baseUrl}}/genres", "host": ["{{baseUrl}}"], "path": ["genres"]}, "body": {"mode": "raw", "raw": "{\n  \"name\": \"Poetry\",\n  \"description\": \"Verse and poems\"\n}", "options": {"raw": {"language": "json"}}}}, "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status is 201', function () { pm.response.to.have.status(201); });", "const json = pm.response.json();", "pm.collectionVariables.set('genreId', json.id);"]}}]},
+        {"name": "List genres", "request": {"method": "GET", "header": [], "url": {"raw": "{{baseUrl}}/genres", "host": ["{{baseUrl}}"], "path": ["genres"]}}, "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"]}}]},
+        {"name": "Get genre by id", "request": {"method": "GET", "header": [], "url": {"raw": "{{baseUrl}}/genres/{{genreId}}", "host": ["{{baseUrl}}"], "path": ["genres", "{{genreId}}"]}}, "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"]}}]},
+        {"name": "Update genre (librarian)", "request": {"method": "PATCH", "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}], "url": {"raw": "{{baseUrl}}/genres/{{genreId}}", "host": ["{{baseUrl}}"], "path": ["genres", "{{genreId}}"]}, "body": {"mode": "raw", "raw": "{\n  \"description\": \"Poems, verse and spoken word\"\n}", "options": {"raw": {"language": "json"}}}}, "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"]}}]}
+      ]
+    },
+    {
+      "name": "Books",
+      "item": [
+        {"name": "Create book (librarian)", "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}], "url": {"raw": "{{baseUrl}}/books", "host": ["{{baseUrl}}"], "path": ["books"]}, "body": {"mode": "raw", "raw": "{\n  \"title\": \"Dune\",\n  \"author\": \"Frank Herbert\",\n  \"isbn\": \"9780441172719\",\n  \"totalCopies\": 5,\n  \"genreId\": \"{{genreId}}\"\n}", "options": {"raw": {"language": "json"}}}}, "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status is 201', function () { pm.response.to.have.status(201); });", "const json = pm.response.json();", "pm.collectionVariables.set('bookId', json.id);"]}}]},
+        {"name": "List books (filter + search + pagination)", "request": {"method": "GET", "header": [], "url": {"raw": "{{baseUrl}}/books?genreId={{genreId}}&search=dune&page=1&limit=10", "host": ["{{baseUrl}}"], "path": ["books"], "query": [{"key": "genreId", "value": "{{genreId}}"}, {"key": "search", "value": "dune"}, {"key": "page", "value": "1"}, {"key": "limit", "value": "10"}]}}, "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"]}}]},
+        {"name": "List all books (page 1)", "request": {"method": "GET", "header": [], "url": {"raw": "{{baseUrl}}/books?page=1&limit=5", "host": ["{{baseUrl}}"], "path": ["books"], "query": [{"key": "page", "value": "1"}, {"key": "limit", "value": "5"}]}}, "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"]}}]},
+        {"name": "Get book by id", "request": {"method": "GET", "header": [], "url": {"raw": "{{baseUrl}}/books/{{bookId}}", "host": ["{{baseUrl}}"], "path": ["books", "{{bookId}}"]}}, "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"]}}]},
+        {"name": "Update book (librarian)", "request": {"method": "PATCH", "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}], "url": {"raw": "{{baseUrl}}/books/{{bookId}}", "host": ["{{baseUrl}}"], "path": ["books", "{{bookId}}"]}, "body": {"mode": "raw", "raw": "{\n  \"totalCopies\": 8\n}", "options": {"raw": {"language": "json"}}}}, "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"]}}]}
+      ]
+    },
+    {
+      "name": "Role / validation checks",
+      "item": [
+        {"name": "Create book as patron -> 403", "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{patronToken}}"}], "url": {"raw": "{{baseUrl}}/books", "host": ["{{baseUrl}}"], "path": ["books"]}, "body": {"mode": "raw", "raw": "{\n  \"title\": \"Nope\",\n  \"author\": \"Nobody\",\n  \"isbn\": \"9780306406157\",\n  \"totalCopies\": 1,\n  \"genreId\": \"{{genreId}}\"\n}", "options": {"raw": {"language": "json"}}}}, "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status is 403', function () { pm.response.to.have.status(403); });"]}}]},
+        {"name": "Create book with invalid body -> 400", "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}], "url": {"raw": "{{baseUrl}}/books", "host": ["{{baseUrl}}"], "path": ["books"]}, "body": {"mode": "raw", "raw": "{\n  \"title\": \"\",\n  \"author\": 5,\n  \"isbn\": \"123\",\n  \"totalCopies\": 0,\n  \"genreId\": \"x\"\n}", "options": {"raw": {"language": "json"}}}}, "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status is 400', function () { pm.response.to.have.status(400); });"]}}]}
+      ]
+    },
+    {
+      "name": "Cleanup",
+      "item": [
+        {"name": "Delete book (librarian)", "request": {"method": "DELETE", "header": [{"key": "Authorization", "value": "Bearer {{token}}"}], "url": {"raw": "{{baseUrl}}/books/{{bookId}}", "host": ["{{baseUrl}}"], "path": ["books", "{{bookId}}"]}}, "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"]}}]},
+        {"name": "Delete genre (librarian)", "request": {"method": "DELETE", "header": [{"key": "Authorization", "value": "Bearer {{token}}"}], "url": {"raw": "{{baseUrl}}/genres/{{genreId}}", "host": ["{{baseUrl}}"], "path": ["genres", "{{genreId}}"]}}, "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status is 200', function () { pm.response.to.have.status(200); });"]}}]}
+      ]
+    }
+  ]
+}

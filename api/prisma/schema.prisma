@@ -39,6 +39,7 @@ model Book {
   isbn          String?  @unique
   description   String?
   publishedYear Int?
+  totalCopies   Int      @default(1)
   genreId       String
   genre         Genre    @relation(fields: [genreId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   reviews       Review[]
