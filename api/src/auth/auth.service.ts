@@ -21,15 +21,20 @@ export class AuthService {
 
   async register(dto: RegisterDto) {
     const passwordHash = await hash(dto.password, SALT_ROUNDS);
+
     try {
       const user = await this.prisma.user.create({
         data: {
           name: dto.name,
           email: dto.email.toLowerCase(),
           passwordHash,
-          role: dto.role,
         },
-        select: { id: true, name: true, email: true, role: true },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+        },
       });
       return user;
     } catch (error) {
@@ -51,7 +56,6 @@ export class AuthService {
     if (!user || !valid) {
       throw new UnauthorizedException("Invalid email or password");
     }
-
     const payload = { sub: user.id, email: user.email, role: user.role };
     return { access_token: await this.jwtService.signAsync(payload) };
   }
